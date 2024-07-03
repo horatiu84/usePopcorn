@@ -6,13 +6,13 @@ export default function MovieDetails({
   selectedId,
   onCloseMovie,
   onAddWatched,
-  watched
+  watched,
 }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
-  const alreadyAdded = watched.filter( movie => movie.imdbID === selectedId);
+  const alreadyAdded = watched.filter((movie) => movie.imdbID === selectedId);
 
   console.log(alreadyAdded[0]?.userRating);
 
@@ -37,7 +37,7 @@ export default function MovieDetails({
       poster,
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
-      userRating
+      userRating,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
@@ -58,6 +58,35 @@ export default function MovieDetails({
       getMovieDetails();
     },
     [selectedId]
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "Hora's Movies";
+      };
+    },
+    [title]
+  );
+
+  useEffect(
+    function () {
+      function callBack(e) {
+        if (e.code === "Escape") {
+          onCloseMovie();
+        }
+      }
+      
+      document.addEventListener("keydown", callBack);
+
+      return function () {
+        document.removeEventListener("keydown", callBack);
+      };
+    },
+    [onCloseMovie]
   );
 
   return (
@@ -86,21 +115,22 @@ export default function MovieDetails({
 
           <section>
             <div className="rating">
-            {
-              alreadyAdded.length === 0 ? (
-             <>
-              <StarRating
-                maxRating={10}
-                size={24}
-                onSetRating={setUserRating}
-              />
-              {userRating > 0 && (
-                <button className="btn-add" onClick={handleAdd}>
-                  + Add to list
-                </button>
+              {alreadyAdded.length === 0 ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    onSetRating={setUserRating}
+                  />
+                  {userRating > 0 && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      + Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>My rating : ⭐{alreadyAdded.at(0)?.userRating}</p>
               )}
-             </>) : <p>⭐{alreadyAdded.at(0)?.userRating}</p> 
-            }
             </div>
             <p>
               <em>{plot}</em>
