@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMovies } from "./useMovies";
 
 import Navbar from "./components/Navbar";
@@ -13,6 +13,7 @@ import ErrorMessage from "./components/ErrorMessage";
 import MovieDetails from "./components/MovieDetails";
 import WatchedSummary from "./components/WatchedSummary";
 import WatchedMovieList from "./components/WatchedMovieList";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 
 export default function App() {
@@ -22,10 +23,9 @@ export default function App() {
 
   const {movies,isLoading,error} = useMovies(query);
 
-  const [watched, setWatched] = useState(function() {
-    const storedValue = localStorage.getItem('watched');
-    return JSON.parse(storedValue)
-  } );
+  const [watched,setWatched] = useLocalStorageState([], "watched");
+
+
 
   function handleSelectMovie(id) {
     setSelectedId((selected) => (id === selected ? null : id));
@@ -37,30 +37,13 @@ export default function App() {
 
   function handleAddMovie(movie) {
     setWatched((movies) => [...movies, movie]);
-
-    // OPTION 1 - using localStorage from the handler function
-
-    // we can't use watched in the localStorage, since is still stale state
-    // that means that the watched will not be updated, since setWatched is asynchronous
-
-    // to have access to the updated watched, we need to create a new array
-    // and adding the new movie : 
-    //localStorage.setItem('watched', JSON.stringify([...watched, movie]));
   }
 
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-  // OPTTION 2 - using localStorage from a useEffect function
 
-  useEffect( function () {
-    // in an useEffect we'll have acces to the updated watched prop
-    // since the useEffect function will run each time the watched 
-    // prop will change 
-    localStorage.setItem('watched', JSON.stringify(watched));
-  }, [watched])
- 
 
 
 

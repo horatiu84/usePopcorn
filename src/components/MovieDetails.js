@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
+import { useKey } from "../useKey";
 
 export default function MovieDetails({
   selectedId,
@@ -79,6 +80,7 @@ export default function MovieDetails({
     [title]
   );
 
+  /*
   useEffect(
     function () {
       function callBack(e) {
@@ -95,6 +97,14 @@ export default function MovieDetails({
     },
     [onCloseMovie]
   );
+
+  */
+
+  
+
+  // we'll use the costum hook useKey insteed of the useEffect above
+
+  useKey('Escape', onCloseMovie);
 
   return (
     <div className="details">
